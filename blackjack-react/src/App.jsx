@@ -48,24 +48,54 @@ function shuffleDeck(deck) {
   return shuffledDeck; // Return the shuffled deck
 }
 
+function dealInitialHands(deck) {
+  const playerHand = [deck[0], deck[2]]; // Give the player the first and third card from the deck
+  const dealerHand = [deck[1], deck[3]]; // Give the dealer the second and fourth card from the deck
+  const remainingDeck = deck.slice(4); // Remove the first four cards from the deck
+
+  return {
+    playerHand: playerHand,
+    dealerHand: dealerHand,
+    remainingDeck: remainingDeck,
+  };
+}
+
 function App() {
-  const [deck, setDeck] = useState(shuffleDeck(createDeck())); // Create a new deck of cards
+  const startingDeck = shuffleDeck(createDeck()); // Create and shuffle a new deck of cards
+  const initialDeal = dealInitialHands(startingDeck); // Deal the initial hands to the player and dealer
+
+  const [deck, setDeck] = useState(initialDeal.remainingDeck); // Create a new deck of cards
+  const [playerHand, setPlayerHand] = useState(initialDeal.playerHand); // Create a state variable for the player's hand
+  const [dealerHand, setDealerHand] = useState(initialDeal.dealerHand); // Create a state variable for the dealer's hand
 
   return (
     <main>
       <h1>Blackjack</h1>
-      <p>Cards in deck: {deck.length}</p>
 
-      <h2>First 5 cards:</h2>
-      <ul>
-        {deck.slice(0, 5).map((card, index) => (
-          <li key={`${card.rank}-${card.suit}-${index}`}>
-            {card.rank} of {card.suit}
-          </li>
-        ))}
-      </ul>
+      <section>
+        <h2>Dealer</h2>
+        <ul>
+          {dealerHand.map((card, index) => (
+            <li key={`${card.rank}-${card.suit}-${index}`}>
+              {card.rank} of {card.suit}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section>
+        <h2>Player</h2>
+        <ul>
+          {playerHand.map((card, index) => (
+            <li key={`${card.rank}-${card.suit}-${index}`}>
+              {card.rank} of {card.suit}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <p>Cards left in deck: {deck.length}</p>
     </main>
   );
 }
-
 export default App;
