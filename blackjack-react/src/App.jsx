@@ -58,7 +58,30 @@ function dealInitialHands(deck) {
     dealerHand: dealerHand,
     remainingDeck: remainingDeck,
   };
+
+  
 }
+
+function calculateHandValue(hand) {
+    let totalValue = 0;
+
+    let aceCount = 0; // Count the number of aces in the hand
+
+    for (let card of hand) {  // Loop through each card in the hand
+      totalValue += card.value; // Add the value of the card to the total value
+      if (card.rank === "A") {
+        aceCount++; // Increment the ace count if the card is an ace
+      }
+    }
+
+    // Adjust for aces if the total value is over 21
+    while (totalValue > 21 && aceCount > 0) {
+      totalValue -= 10; // Treat an ace as 1 instead of 11
+      aceCount--; // Decrement the ace count
+    }
+
+    return totalValue;
+  }
 
 function App() {
   const startingDeck = shuffleDeck(createDeck()); // Create and shuffle a new deck of cards
@@ -68,12 +91,16 @@ function App() {
   const [playerHand, setPlayerHand] = useState(initialDeal.playerHand); // Create a state variable for the player's hand
   const [dealerHand, setDealerHand] = useState(initialDeal.dealerHand); // Create a state variable for the dealer's hand
 
+  const playerScore = calculateHandValue(playerHand); // Calculate the player's score
+  const dealerScore = calculateHandValue(dealerHand); // Calculate the dealer's score
+
   return (
     <main>
       <h1>Blackjack</h1>
 
       <section>
         <h2>Dealer</h2>
+        <p>Score: {dealerScore}</p>
         <ul>
           {dealerHand.map((card, index) => (
             <li key={`${card.rank}-${card.suit}-${index}`}>
@@ -85,6 +112,7 @@ function App() {
 
       <section>
         <h2>Player</h2>
+        <p>Score: {playerScore}</p>
         <ul>
           {playerHand.map((card, index) => (
             <li key={`${card.rank}-${card.suit}-${index}`}>
