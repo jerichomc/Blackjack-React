@@ -83,6 +83,18 @@ function calculateHandValue(hand) {
     return totalValue;
   }
 
+  function dealCardToHand(deck, hand) {
+    const newCard = deck[0]; // Get the top card from the deck
+    const newHand = [...hand, newCard];
+
+    const newDeck = deck.slice(1); // Remove the top card from the deck
+
+    return {
+      newHand: newHand,
+      newDeck: newDeck,
+    }
+  }
+
 function App() {
   const startingDeck = shuffleDeck(createDeck()); // Create and shuffle a new deck of cards
   const initialDeal = dealInitialHands(startingDeck); // Deal the initial hands to the player and dealer
@@ -93,6 +105,7 @@ function App() {
 
   const playerScore = calculateHandValue(playerHand); // Calculate the player's score
   const dealerScore = calculateHandValue(dealerHand); // Calculate the dealer's score
+
 
   return (
     <main>
@@ -120,6 +133,14 @@ function App() {
             </li>
           ))}
         </ul>
+
+        <button onClick={() => {
+          const result = dealCardToHand(deck, playerHand);
+          setDeck(result.newDeck);
+          setPlayerHand(result.newHand);
+        }}>
+          Hit
+        </button>
       </section>
 
       <p>Cards left in deck: {deck.length}</p>
