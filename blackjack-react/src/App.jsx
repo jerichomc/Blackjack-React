@@ -106,6 +106,11 @@ function App() {
   const playerScore = calculateHandValue(playerHand); // Calculate the player's score
   const dealerScore = calculateHandValue(dealerHand); // Calculate the dealer's score
 
+  let gameMessage = ""; // Initialize a variable to hold the game message
+  if(playerScore > 21) {
+    gameMessage = "Player busts! Dealer wins!";
+  }
+
 
   return (
     <main>
@@ -126,6 +131,7 @@ function App() {
       <section>
         <h2>Player</h2>
         <p>Score: {playerScore}</p>
+        <p>{gameMessage}</p>
         <ul>
           {playerHand.map((card, index) => (
             <li key={`${card.rank}-${card.suit}-${index}`}>
