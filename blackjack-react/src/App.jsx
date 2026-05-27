@@ -95,6 +95,23 @@ function calculateHandValue(hand) {
     }
   }
 
+  function playDealerTurn(deck, dealerHand) { // Function to play the dealer's turn
+    let newDeck = [...deck]; // Create a copy of the deck to avoid mutating the original deck
+    let newDealerHand = [...dealerHand]; // Create a copy of the dealer's hand to avoid mutating the original hand
+
+    while (calculateHandValue(newDealerHand) < 17) { // Keep hitting until the dealer's hand value is 17 or higher
+      const nextCard = newDeck[0]; // Get the top card from the deck
+
+      newDealerHand = [...newDealerHand, nextCard]; // Add the next card to the dealer's hand
+      newDeck = newDeck.slice(1); // Remove the top card from the deck
+    }
+
+    return { // Return the updated deck and dealer's hand
+      newDeck: newDeck, // Return the updated deck after the dealer's turn
+      newDealerHand: newDealerHand, // Return the updated dealer's hand after the dealer's turn
+    };
+  }
+
 function App() {
   const startingDeck = shuffleDeck(createDeck()); // Create and shuffle a new deck of cards
   const initialDeal = dealInitialHands(startingDeck); // Deal the initial hands to the player and dealer
@@ -106,9 +123,24 @@ function App() {
   const playerScore = calculateHandValue(playerHand); // Calculate the player's score
   const dealerScore = calculateHandValue(dealerHand); // Calculate the dealer's score
 
-  let gameMessage = ""; // Initialize a variable to hold the game message
-  if(playerScore > 21) {
-    gameMessage = "Player busts! Dealer wins!";
+  const [gameMessage, setGameMessage] = useState(''); // Create a state variable for the game message
+  function handleStand() {
+    const result = playDealerTurn(deck, dealerHand); // Play the dealer's turn
+
+    const finalDealerScore = calculateHandValue(result.newDealerHand); // Calculate the dealer's final score
+
+    setDeck(result.newDeck); // Update the deck after the dealer's turn
+    setDealerHand(result.newDealerHand); // Update the dealer's hand after the dealer's turn
+
+    if(finalDealerScore > 21) {
+      setGameMessage('Dealer busts! You win!');
+    } else if (playerScore > finalDealerScore) {
+      setGameMessage('You win!');
+    } else if (playerScore < finalDealerScore) {
+      setGameMessage('Dealer wins!');
+    } else {
+      setDameMessage("Push. It's a tie!")
+    }
   }
 
 
@@ -147,6 +179,7 @@ function App() {
         }}>
           Hit
         </button>
+        <button onClick={handleStand}>Stand</button>
       </section>
 
       <p>Cards left in deck: {deck.length}</p>
