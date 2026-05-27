@@ -122,6 +122,7 @@ function App() {
 
   const playerScore = calculateHandValue(playerHand); // Calculate the player's score
   const dealerScore = calculateHandValue(dealerHand); // Calculate the dealer's score
+  
 
   const [gameMessage, setGameMessage] = useState(''); // Create a state variable for the game message
   function handleStand() {
@@ -139,10 +140,27 @@ function App() {
     } else if (playerScore < finalDealerScore) {
       setGameMessage('Dealer wins!');
     } else {
-      setDameMessage("Push. It's a tie!")
+      setGameMessage("Push. It's a tie!")
     }
   }
 
+  const playerHasBlackjack = playerScore === 21 && playerHand.length === 2; // Check if the player has blackjack
+  const dealerHasBlackjack = dealerScore === 21 && dealerHand.length === 2; // Check if the dealer has blackjack
+  const playerIsBust = playerScore > 21; // Check if the player is bust
+
+  let displayMessage = gameMessage; // Initialize displayMessage with the current game message
+  if(playerHasBlackjack && dealerHasBlackjack) {
+    displayMessage = "Both you and the dealer have blackjack! It's a tie!";
+  } else if (playerHasBlackjack) {
+    displayMessage = "You have blackjack! You win!";
+  } else if (dealerHasBlackjack) {
+    displayMessage = "Dealer has blackjack! Dealer wins!";
+  } else if (playerIsBust) {
+    displayMessage = "You bust! Dealer wins!";
+  }
+
+  const roundIsOver =
+  playerIsBust || playerHasBlackjack || dealerHasBlackjack || gameMessage !== "";
 
   return (
     <main>
@@ -163,7 +181,7 @@ function App() {
       <section>
         <h2>Player</h2>
         <p>Score: {playerScore}</p>
-        <p>{gameMessage}</p>
+        <p>{displayMessage}</p>
         <ul>
           {playerHand.map((card, index) => (
             <li key={`${card.rank}-${card.suit}-${index}`}>
@@ -172,14 +190,14 @@ function App() {
           ))}
         </ul>
 
-        <button onClick={() => {
+        <button disabled={roundIsOver} onClick={() => {
           const result = dealCardToHand(deck, playerHand);
           setDeck(result.newDeck);
           setPlayerHand(result.newHand);
         }}>
           Hit
         </button>
-        <button onClick={handleStand}>Stand</button>
+        <button disabled={roundIsOver} onClick={handleStand}>Stand</button>
       </section>
 
       <p>Cards left in deck: {deck.length}</p>
